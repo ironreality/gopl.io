@@ -15,6 +15,7 @@ import (
 func main() {
 	s, sep := "", ""
 	for _, arg := range os.Args[1:] {
+    fmt.Printf("%v arg is: %v\n", i, arg)
 		s += sep + arg
 		sep = " "
 	}
