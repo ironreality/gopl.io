@@ -39,8 +39,17 @@ func main() {
 
 func countLines(f *os.File, counts map[string]int) {
 	input := bufio.NewScanner(f)
+	file_strings := make(map[string]int)
+
 	for input.Scan() {
 		counts[input.Text()]++
+		file_strings[input.Text()]++
+	}
+
+	for _, n := range file_strings {
+		if n > 1 {
+			fmt.Printf("File %v has duplicated lines!\n", f.Name())
+		}
 	}
 	// NOTE: ignoring potential errors from input.Err()
 }
