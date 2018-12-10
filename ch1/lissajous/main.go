@@ -27,13 +27,13 @@ import (
 )
 
 //!+main
+var white = color.RGBA{0x00, 0x00, 0x00, 0xff}
+var black = color.RGBA{0xff, 0xff, 0xff, 0xff}
 var green = color.RGBA{0x00, 0xff, 0x00, 0xff}
-var palette = []color.Color{color.Black, green}
+var red = color.RGBA{0xff, 0x00, 0x00, 0xff}
+var blue = color.RGBA{0x00, 0x00, 0xff, 0xff}
 
-const (
-	firstcolorIndex = 0 // first color in palette
-	secondcolorIndex = 1 // next color in palette
-)
+var colors = [8]color.RGBA{white, black, green, red, blue}
 
 func main() {
 	//!-main
@@ -49,7 +49,7 @@ func main() {
 		}
 		http.HandleFunc("/", handler)
 		//!-http
-		log.Fatal(http.ListenAndServe("localhost:8000", nil))
+		log.Fatal(http.ListenAndServe("localhost:8080", nil))
 		return
 	}
 	//!+main
@@ -64,9 +64,15 @@ func lissajous(out io.Writer) {
 		nframes = 64    // number of animation frames
 		delay   = 8     // delay between frames in 10ms units
 	)
+
+	lineIndex := rand.Intn(5)
+	canvasIndex := 5 - lineIndex
+	palette := []color.Color{colors[canvasIndex], colors[lineIndex]}
+
 	freq := rand.Float64() * 3.0 // relative frequency of y oscillator
 	anim := gif.GIF{LoopCount: nframes}
 	phase := 0.0 // phase difference
+
 	for i := 0; i < nframes; i++ {
 		rect := image.Rect(0, 0, 2*size+1, 2*size+1)
 		img := image.NewPaletted(rect, palette)
@@ -74,7 +80,7 @@ func lissajous(out io.Writer) {
 			x := math.Sin(t)
 			y := math.Sin(t*freq + phase)
 			img.SetColorIndex(size+int(x*size+0.5), size+int(y*size+0.5),
-				secondcolorIndex)
+				uint8(lineIndex))
 		}
 		phase += 0.1
 		anim.Delay = append(anim.Delay, delay)
