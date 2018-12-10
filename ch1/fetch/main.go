@@ -29,11 +29,14 @@ func main() {
 		}
 
 		bytes, err := io.Copy(os.Stdout, resp.Body)
+		resp.Body.Close()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "fetch output: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Fprintf(os.Stdout, "\n\n%v bytes were fetched\n", bytes)
+
+		fmt.Fprintf(os.Stdout, "\n\nHTTP code is: %v\n", resp.Status)
+		fmt.Fprintf(os.Stdout, "%v bytes were fetched\n", bytes)
 	}
 }
 
