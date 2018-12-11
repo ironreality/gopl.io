@@ -16,6 +16,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"strconv"
 )
 
 //!-main
@@ -43,22 +44,33 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	if len(os.Args) > 1 && os.Args[1] == "web" {
-		//!+http
-		handler := func(w http.ResponseWriter, r *http.Request) {
-			lissajous(w)
-		}
 		http.HandleFunc("/", handler)
-		//!-http
 		log.Fatal(http.ListenAndServe("localhost:8080", nil))
 		return
 	}
 	//!+main
-	lissajous(os.Stdout)
+	lissajous(os.Stdout, 5)
 }
 
-func lissajous(out io.Writer) {
+func handler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		log.Print(err)
+	}
+	cycles := r.FormValue("cycles")
+	if cycles != "" {
+		c, err := strconv.Atoi(cycles)
+		if err != nil {
+			log.Print(err)
+		}
+		//fmt.Fprintf(w, "Form["cycles"] = %v\n", cycles)
+		lissajous(w, float64(c))
+	} else {
+		lissajous(w, 5.0)
+	}
+}
+
+func lissajous(out io.Writer, cycles float64) {
 	const (
-		cycles  = 5     // number of complete x oscillator revolutions
 		res     = 0.001 // angular resolution
 		size    = 100   // image canvas covers [-size..+size]
 		nframes = 64    // number of animation frames
