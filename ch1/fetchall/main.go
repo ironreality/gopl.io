@@ -10,9 +10,10 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -30,13 +31,25 @@ func main() {
 
 func fetch(url string, ch chan<- string) {
 	start := time.Now()
+
+	url_file_path := "/tmp/" + url + ".html"
+
+	if !strings.HasPrefix(url, "http://") {
+		url = "http://" + url
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		ch <- fmt.Sprint(err) // send to channel ch
 		return
 	}
 
-	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
+	f, err := os.OpenFile(url_file_path, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	nbytes, err := io.Copy(f, resp.Body)
 	resp.Body.Close() // don't leak resources
 	if err != nil {
 		ch <- fmt.Sprintf("while reading %s: %v", url, err)
