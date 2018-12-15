@@ -9,10 +9,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/ironreality/gopl.io/ch2/tempconv"
 	"os"
 	"strconv"
-
-	"gopl.io/ch2/tempconv"
 )
 
 func main() {
@@ -24,8 +23,11 @@ func main() {
 		}
 		f := tempconv.Fahrenheit(t)
 		c := tempconv.Celsius(t)
+		k := tempconv.Kelvin(t)
 		fmt.Printf("%s = %s, %s = %s\n",
 			f, tempconv.FToC(f), c, tempconv.CToF(c))
+		fmt.Printf("%s = %s, %s = %s\n",
+			k, tempconv.KToC(k), c, tempconv.CToK(c))
 	}
 }
 
