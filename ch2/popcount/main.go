@@ -29,3 +29,12 @@ func PopCount(x uint64) int {
 }
 
 //!-
+
+func PopCountByCycle(x uint64) int {
+	var count byte
+	for i := 1; i <= 64; i++ {
+		count += byte(x & 1)
+		x = x >> 1
+	}
+	return int(count)
+}
